@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style type="text/css">
+        body {
+            background-color: rgb(169, 151, 151);
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="canvas" width="1000px" height="1000px"></canvas>
+    <script type="text/javascript">
+        const myCanvas = document.getElementById("canvas");
+        const ctx = myCanvas.getContext("2d");
+
+        var adelanto = 10;
+        var retroceso = 10;
+        var direction = " ";
+        var speed = 6;
+        //cuadro negro 
+        var Cuadritox = 300;
+        var Cuadritoy = 300;
+        //Pared gris 
+        const wallX = 400; 
+        const wallY = 400;
+        const wallWidth = 200;
+        const wallHeight = 50;
+
+        function getRandomPosition() {
+            return {
+                x: Math.random() * (myCanvas.width - 20),
+                y: Math.random() * (myCanvas.height - 20)
+            };
+        }
+
+        function detectCollision(newx,newy) {
+            return (
+               // adelanto < Cuadritox + 20 &&
+                //adelanto + 50 > Cuadritox &&
+                //retroceso < Cuadritoy + 20 &&
+                //retroceso + 50 > Cuadritoy &&
+
+
+
+                newx < wallX + wallWidth &&
+                newx + 50 > wallX && 
+                newy < wallY + wallHeight &&
+                newy + 50 > wallY
+            );
+        }
+
+        function detectCuadrito(){
+            return (
+                adelanto < Cuadritox + 20 &&
+                adelanto + 50 > Cuadritox &&
+                retroceso < Cuadritoy + 20 &&
+                retroceso + 50 > Cuadritoy
+            );
+        }
+        
+
+        function update() {
+           
+
+            switch (direction) {
+                case "up":
+                    if(!detectCollision(adelanto,retroceso-speed)){
+                        retroceso -= speed;
+                    }
+                    if (retroceso <= 0) {
+                        retroceso = 950;
+                    }
+                    break;
+                case "down":
+                if(!detectCollision(adelanto,retroceso+speed)){
+                        retroceso += speed;
+                    }
+                    if (retroceso >= 950) {
+                        retroceso = 0;
+                    }
+                    break;
+                case "left":
+                if(!detectCollision(adelanto-speed,retroceso)){
+                        adelanto -= speed;
+                    }
+                    if (adelanto <= 0) {
+                        adelanto = 950;
+                    }
+                    break;
+                case "right":
+                if(!detectCollision(adelanto+speed,retroceso)){
+                        adelanto += speed;
+                    }
+                    if (adelanto >= 950) {
+                        adelanto = 0;
+                    }
+                    break;
+            }
+
+            if (detectCuadrito()) {
+                
+                const newPosition = getRandomPosition();
+                Cuadritox = newPosition.x;
+                Cuadritoy = newPosition.y;
+            } 
+         
+        }
+
+        function paint() {
+            ctx.clearRect(0, 0, myCanvas.width, myCanvas.height);
+            // Cuadro verde
+            ctx.fillStyle = "green";
+            ctx.fillRect(adelanto, retroceso, 50, 50);
+            // Cuadrrito negro
+            ctx.fillStyle = "black";
+            ctx.fillRect(Cuadritox, Cuadritoy, 15, 15);
+            // Rectangulo gris
+            ctx.fillStyle = "gray";
+            ctx.fillRect(wallX, wallY, wallWidth, wallHeight);
+
+            update();
+            requestAnimationFrame(paint);
+        }
+        //Movimiento
+        document.addEventListener("keydown", (event) => {
+            switch (event.key) {
+                case "w":
+                case "W":
+                    direction = "up";
+                    break;
+                case "s":
+                case "S":
+                    direction = "down";
+                    break;
+                case "a":
+                case "A":
+                    direction = "left";
+                    break;
+                case "d":
+                case "D":
+                    direction = "right";
+                    break;
+                case "p":
+                case "P":
+                    speed += 2.5;
+                    break;
+            }
+        });
+        paint();
+
+        window.requestAnimationFrame = (function () {
+            return window.requestAnimationFrame ||
+                window.webkitRequestAnimationFrame ||
+                window.mozRequestAnimationFrame ||
+                function (callback) {
+                    window.setTimeout(callback, 17);
+                };
+        }());
+    </script>
+</body>
+
+</html>
